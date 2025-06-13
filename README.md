@@ -8,13 +8,14 @@ You can get everything you need from the GitHub repository:
 
 git clone https://github.com/silentkind05/Flybratron_demo.git
 ```
-- **Set up your Jupyter notebook environment**
 
-	Build and activate the Conda environment:
+### Set up your Jupyter notebook environment
 
-	```bash
-	
-	conda env create --name flybratron --file environment.yml
-	
-	conda activate flybratron
-	```
+Build and activate the Conda environment:
+
+```bash
+
+conda env create --name flybratron --file environment.yml
+
+conda activate flybratron
+```
