@@ -49,6 +49,14 @@ def run_pulse(rig, dev, aout, stat_V, sign, amplitude, phase, stim_V, duration):
 	sleep(duration)
 	dev.param = {'amplitude': 0.0, 'phase': phase}
 	aout.setVoltage(stat_V)
+ 
+ 
+def shuffle_if_array(x):
+    if isinstance(x, list):
+        x = np.array(x)
+    if isinstance(x, np.ndarray):
+        return np.random.permutation(x)
+    return x
 
 ################################ Function to run PHASE function for YAW responses ################################
 def yaw_phase_function(rig, dev, aout, stat_V, phase_= 0.0, amplitude_=2., sleep_dur=1., stim_dur=0.2, num_sets=2, module_clip_V = -9.8):
@@ -82,7 +90,7 @@ def yaw_phase_function(rig, dev, aout, stat_V, phase_= 0.0, amplitude_=2., sleep
 
 			# Second, - amp
 			print ('and opposite direction')
-			run_pulse(rig, dev, aout, stat_V, 1, amplitude_, phase_, stim_V, stim_dur)
+			run_pulse(rig, dev, aout, stat_V, -1, amplitude_, phase_, stim_V, stim_dur)
 			sleep(sleep_dur)
 			print (' ')
 
@@ -117,6 +125,7 @@ def amplitude_set_function(
     all_amps = stim_array[:, 0].astype(float)
     unique_amps = np.unique(all_amps)
     print("Running amplitude set: {}".format(unique_amps))
+    print("Phase: {}".format(phase_))
     print(" ")
 
     for set_num in set_numbers:
@@ -143,7 +152,7 @@ def amplitude_set_function(
             stim_V = round(stim_V, 1)
             trial_idx += 1
             # --- First stimulus ---
-            print('Dir {}: {}amp {}, phase {}'.format(direction,"+" if set_sign > 0 else "-", amp, phase_))
+            print('Dir {}: {}amp {}, stimV {}'.format(direction,"+" if set_sign > 0 else "-", amp, stim_V))
             run_pulse(rig, dev, aout, stat_V, set_sign, amp, phase_, stim_V, stim_dur)
             sleep(inter_stim_dur)
 
@@ -165,8 +174,12 @@ def amplitude_set_function(
 def duration_set_function(rig, dev, aout, stat_V, phase_=0.05, amplitude=1.0, 
                       stim_dur=[0.25], after_first_dur=1.0, after_sec_dur=1.0, num_sets=2, 
                       module_clip_V=-8.2, set_clip_V=-7.6, 
-                      stim_dir=1, shuffle=False, stim_V = 5.0):
-    
+                      stim_dir=1, shuffle=False, rand = False, stim_V = 5.0):
+    if rand:
+        stim_dur        = shuffle_if_array(stim_dur)
+        after_first_dur = shuffle_if_array(after_first_dur)
+        after_sec_dur   = shuffle_if_array(after_sec_dur)
+
     def get_num_trials(*args):
         lengths = []
         for arg in args:
